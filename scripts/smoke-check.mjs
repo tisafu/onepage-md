@@ -8,6 +8,7 @@ const requiredFiles = [
   "src/renderer/styles.css",
   "src/renderer/bridge.js",
   "src/renderer/renderer.js",
+  "src/renderer/default.md",
   "src/renderer/vendor/purify.min.js",
   "src/renderer/vendor/marked.umd.js",
   "src-tauri/Cargo.toml",

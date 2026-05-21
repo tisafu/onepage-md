@@ -10,7 +10,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "一页",
+        "title": "",
         "width": 1180,
         "height": 860,
         "minWidth": 760,

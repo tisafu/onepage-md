@@ -11,10 +11,8 @@ const elements = {
   toolbar: document.querySelector(".toolbar"),
   floatingStats: document.querySelector(".floating-stats"),
   openButton: document.getElementById("openButton"),
-  welcomeOpenButton: document.getElementById("welcomeOpenButton"),
   refreshButton: document.getElementById("refreshButton"),
   revealButton: document.getElementById("revealButton"),
-  welcome: document.getElementById("welcome"),
   reader: document.getElementById("reader"),
   document: document.getElementById("document"),
   toc: document.getElementById("toc"),
@@ -142,7 +140,7 @@ function patchLinksAndImages() {
   });
 }
 
-function renderMarkdown(file) {
+function renderMarkdown(file, options = {}) {
   state.file = file;
   state.rawMarkdown = file.content || "";
 
@@ -157,7 +155,6 @@ function renderMarkdown(file) {
   patchLinksAndImages();
   addHeadingIdsAndBuildToc();
 
-  elements.welcome.classList.add("is-hidden");
   elements.reader.classList.remove("is-hidden");
   elements.topbarDocInfo.classList.remove("is-hidden");
   elements.toolbar.classList.remove("is-hidden");
@@ -167,11 +164,16 @@ function renderMarkdown(file) {
   elements.docPath.textContent = file.path;
   elements.wordCount.textContent = `${countWords(state.rawMarkdown).toLocaleString("zh-CN")} 字 · ${formatBytes(file.size)}`;
   elements.modifiedAt.textContent = `${formatDate(file.modifiedAt)} 修改`;
-  elements.refreshButton.disabled = false;
-  elements.revealButton.disabled = false;
+  elements.refreshButton.disabled = Boolean(options.isDefault);
+  elements.revealButton.disabled = Boolean(options.isDefault);
 
-  showToast(`已打开：${file.name}`);
-  startAutoRefresh();
+  const stage = document.querySelector(".document-stage");
+  stage?.scrollTo({ top: 0, left: 0, behavior: "auto" });
+
+  if (!options.isDefault) {
+    showToast(`已打开：${file.name}`);
+    startAutoRefresh();
+  }
 }
 
 async function openFileDialog() {
@@ -327,7 +329,6 @@ function bindShortcuts() {
 }
 
 elements.openButton.addEventListener("click", openFileDialog);
-elements.welcomeOpenButton.addEventListener("click", openFileDialog);
 elements.refreshButton.addEventListener("click", () => refreshFile());
 elements.revealButton.addEventListener("click", () => {
   if (state.file?.path) window.mdLens.revealFile(state.file.path);
@@ -342,5 +343,19 @@ elements.searchInput.addEventListener("input", () => highlightSearch(elements.se
 window.mdLens.onFileOpened((file) => renderMarkdown(file));
 window.mdLens.onFileError((payload) => showToast(`${payload.path || "文件"}：${payload.message}`));
 
+async function loadDefaultDocument() {
+  const response = await fetch("./default.md");
+  const content = await response.text();
+  renderMarkdown({
+    path: "内置演示文档",
+    name: "欢迎来到一页.md",
+    dir: "",
+    size: new Blob([content]).size,
+    modifiedAt: new Date().toISOString(),
+    content
+  }, { isDefault: true });
+}
+
 bindDragDrop();
 bindShortcuts();
+loadDefaultDocument().catch(() => showToast("默认文档加载失败"));
