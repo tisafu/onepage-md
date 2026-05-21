@@ -261,10 +261,19 @@ function highlightSearch(query) {
 function bindDragDrop() {
   let dragDepth = 0;
 
+  const showDropOverlay = () => elements.dropOverlay.classList.add("is-visible");
+  const hideDropOverlay = () => {
+    dragDepth = 0;
+    elements.dropOverlay.classList.remove("is-visible");
+  };
+
+  window.addEventListener("onepage-drag-enter", showDropOverlay);
+  window.addEventListener("onepage-drag-leave", hideDropOverlay);
+
   window.addEventListener("dragenter", (event) => {
     event.preventDefault();
     dragDepth += 1;
-    elements.dropOverlay.classList.add("is-visible");
+    showDropOverlay();
   });
 
   window.addEventListener("dragover", (event) => {
@@ -279,15 +288,11 @@ function bindDragDrop() {
 
   window.addEventListener("drop", async (event) => {
     event.preventDefault();
-    dragDepth = 0;
-    elements.dropOverlay.classList.remove("is-visible");
+    hideDropOverlay();
 
     const droppedFile = event.dataTransfer.files?.[0];
     const filePath = droppedFile ? window.mdLens.getPathForFile(droppedFile) : "";
-    if (!filePath) {
-      showToast("没有拿到文件路径，请用“打开文件”按钮选择一次");
-      return;
-    }
+    if (!filePath) return;
 
     try {
       const file = await window.mdLens.readFile(filePath);

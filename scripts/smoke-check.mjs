@@ -4,13 +4,17 @@ import { marked } from "marked";
 
 const root = path.resolve(import.meta.dirname, "..");
 const requiredFiles = [
-  "src/main.js",
-  "src/preload.cjs",
   "src/renderer/index.html",
   "src/renderer/styles.css",
+  "src/renderer/bridge.js",
   "src/renderer/renderer.js",
   "src/renderer/vendor/purify.min.js",
   "src/renderer/vendor/marked.umd.js",
+  "src-tauri/Cargo.toml",
+  "src-tauri/tauri.conf.json",
+  "src-tauri/src/main.rs",
+  "src-tauri/icons/icon.png",
+  "src-tauri/icons/icon.icns",
   "build/icon.png",
   "build/icon.icns"
 ];
@@ -25,6 +29,9 @@ if (!indexHtml.includes("./vendor/marked.umd.js")) {
 }
 if (!indexHtml.includes("./vendor/purify.min.js")) {
   throw new Error("renderer is not loading the bundled DOMPurify file");
+}
+if (!indexHtml.includes("./bridge.js")) {
+  throw new Error("renderer is not loading the Tauri bridge");
 }
 
 const sampleMarkdown = `# Smoke Test\n\n- item\n- **bold**\n\n| A | B |\n| --- | --- |\n| 1 | <img src="https://example.com/a.png" /> |`;

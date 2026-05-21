@@ -1,55 +1,18 @@
 {
   "name": "onepage-md",
   "productName": "一页",
-  "version": "0.2.0",
+  "version": "0.3.0-tauri.0",
   "description": "A quiet single-document Markdown reader without vault or file management.",
   "type": "module",
   "private": true,
-  "main": "src/main.js",
   "scripts": {
-    "start": "electron .",
-    "dev": "MD_LENS_DEV=1 electron . --dev",
-    "start:file": "electron . --",
-    "test:marked": "node test-marked.mjs",
-    "smoke": "node scripts/smoke-check.mjs",
-    "pack:mac": "electron-builder --mac dir --arm64"
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "smoke": "node scripts/smoke-check.mjs"
   },
-  "dependencies": {},
   "devDependencies": {
+    "@tauri-apps/cli": "^2.11.2",
     "dompurify": "latest",
-    "electron": "latest",
-    "electron-builder": "latest",
     "marked": "^18.0.4"
-  },
-  "build": {
-    "appId": "cn.workbuddy.onepage",
-    "productName": "一页",
-    "directories": {
-      "output": "release"
-    },
-    "files": [
-      "src/**/*",
-      "build/icon.png",
-      "package.json"
-    ],
-    "mac": {
-      "category": "public.app-category.productivity",
-      "icon": "build/icon.icns",
-      "target": [
-        "dir"
-      ]
-    },
-    "fileAssociations": [
-      {
-        "ext": [
-          "md",
-          "markdown",
-          "mdown",
-          "mkd"
-        ],
-        "name": "Markdown Document",
-        "role": "Viewer"
-      }
-    ]
   }
 }

@@ -1,0 +1,15 @@
+[package]
+name = "onepage"
+version = "0.3.0-tauri.0"
+description = "A quiet single-document Markdown reader."
+authors = ["Tisa"]
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+chrono = "0.4"
+rfd = "0.15"
+serde = { version = "1", features = ["derive"] }
+tauri = { version = "2", features = [] }

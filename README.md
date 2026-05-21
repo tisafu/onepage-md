@@ -9,7 +9,7 @@
 - 使用 `DOMPurify` 清洗 HTML
 - 自动生成标题目录
 - 支持文档内搜索、刷新、在 Finder 查看
-- 开发模式下修改 `src/renderer` 会自动刷新窗口
+- Tauri 版使用系统 WebView，包体和启动速度明显优于 Electron 原型
 
 ## 开发
 
@@ -18,15 +18,21 @@ npm install
 npm run dev
 ```
 
-开发模式会自动打开 DevTools，并监听：
+当前开发模式由 Tauri 启动。前端文件在：
 
 ```text
-src/renderer/styles.css
-src/renderer/index.html
-src/renderer/renderer.js
+src/renderer/
 ```
 
-保存后窗口会自动刷新。
+主要文件：
+
+```text
+src/renderer/index.html
+src/renderer/styles.css
+src/renderer/bridge.js
+src/renderer/renderer.js
+src-tauri/src/main.rs
+```
 
 ## 验证
 
@@ -37,35 +43,33 @@ npm run smoke
 ## 打包
 
 ```bash
-npm run pack:mac
+npm run build
 ```
 
 打包产物在：
 
 ```text
-release/mac-arm64/一页.app
+src-tauri/target/release/bundle/macos/一页.app
 ```
 
 如果要压缩分发：
 
 ```bash
-ditto -c -k --sequesterRsrc --keepParent "release/mac-arm64/一页.app" "release/OnePage-vX.Y.Z.zip"
+ditto -c -k --sequesterRsrc --keepParent "src-tauri/target/release/bundle/macos/一页.app" "release/OnePage-Tauri-vX.Y.Z.zip"
 ```
 
 ## 包体说明
 
-运行时依赖的前端库已经 vendored 到：
+运行时前端库 vendored 到：
 
 ```text
 src/renderer/vendor/
 ```
 
-因此打包配置只包含：
+Tauri 配置在：
 
 ```text
-src/**/*
-build/icon.png
-package.json
+src-tauri/tauri.conf.json
 ```
 
-`node_modules/`、`release/`、`build/icon.iconset/` 都不进入源码管理。
+Electron 原型已由 Git 历史保留，当前主线是 Tauri。
