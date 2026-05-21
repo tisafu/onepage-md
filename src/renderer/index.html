@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob: file:; img-src 'self' https: data: blob: file:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' https: file:;" />
+  <title>一页</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="chrome-grip"></div>
+
+  <main class="app-frame">
+    <header class="topbar">
+      <section class="topbar-doc-info is-hidden">
+        <strong id="docTitle">未选择文档</strong>
+        <span id="docPath">打开或拖入 Markdown 文件</span>
+      </section>
+
+      <section class="toolbar is-hidden">
+        <button id="openButton" class="primary-button" type="button">打开新文件</button>
+        <button id="refreshButton" type="button" disabled>刷新</button>
+        <button id="revealButton" type="button" disabled>在 Finder 查看</button>
+      </section>
+    </header>
+
+    <section id="dropOverlay" class="drop-overlay" aria-hidden="true">
+      <div>
+        <span>↓</span>
+        <strong>松手打开这个 Markdown</strong>
+      </div>
+    </section>
+
+    <section id="welcome" class="welcome-panel">
+      <div class="welcome-card">
+        <h1>打开 Markdown</h1>
+        <p>拖入 `.md` 文件，或选择一个文件开始阅读。</p>
+        <div class="welcome-actions">
+          <button id="welcomeOpenButton" class="primary-button" type="button">选择文件</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="reader" class="reader-shell is-hidden">
+      <aside class="toc-panel">
+        <div class="panel-title">目录</div>
+        <nav id="toc" class="toc-list"></nav>
+      </aside>
+
+      <article class="document-stage">
+        <div class="search-bar" id="searchBar">
+          <input id="searchInput" type="search" placeholder="搜索当前文档…" />
+          <button id="closeSearchButton" type="button">关闭</button>
+        </div>
+
+        <div id="document" class="markdown-body"></div>
+      </article>
+    </section>
+  </main>
+
+  <div class="floating-stats is-hidden" aria-live="polite">
+    <span id="wordCount">0 字</span>
+    <span id="modifiedAt">未修改</span>
+  </div>
+
+  <div id="toast" class="toast" role="status"></div>
+
+  <script src="./vendor/purify.min.js"></script>
+  <script src="./vendor/marked.umd.js"></script>
+  <script src="./renderer.js"></script>
+</body>
+</html>
