@@ -646,45 +646,6 @@ mark.search-hit {
   background: rgba(255, 207, 77, 0.62);
 }
 
-.drop-overlay {
-  position: absolute;
-  inset: 64px 14px 14px;
-  z-index: 40;
-  display: none;
-  place-items: center;
-  border: 1px dashed var(--border-strong);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(8px);
-}
-
-.drop-overlay.is-visible {
-  display: grid;
-}
-
-.drop-overlay div {
-  display: grid;
-  place-items: center;
-  gap: 8px;
-}
-
-.drop-overlay span {
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  color: var(--text-muted);
-  background: var(--surface-soft);
-  font: 700 24px/1 var(--zh-font-mono);
-}
-
-.drop-overlay strong {
-  font-size: 1rem;
-  font-weight: 700;
-}
-
 .toast {
   position: fixed;
   right: 18px;

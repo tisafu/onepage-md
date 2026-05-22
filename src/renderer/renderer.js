@@ -21,7 +21,6 @@ const elements = {
   docPath: document.getElementById("docPath"),
   wordCount: document.getElementById("wordCount"),
   modifiedAt: document.getElementById("modifiedAt"),
-  dropOverlay: document.getElementById("dropOverlay"),
   toast: document.getElementById("toast"),
   searchBar: document.getElementById("searchBar"),
   searchInput: document.getElementById("searchInput"),
@@ -281,51 +280,6 @@ function highlightSearch(query) {
   if (firstHit) firstHit.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
-function bindDragDrop() {
-  let dragDepth = 0;
-
-  const showDropOverlay = () => elements.dropOverlay.classList.add("is-visible");
-  const hideDropOverlay = () => {
-    dragDepth = 0;
-    elements.dropOverlay.classList.remove("is-visible");
-  };
-
-  window.addEventListener("onepage-drag-enter", showDropOverlay);
-  window.addEventListener("onepage-drag-leave", hideDropOverlay);
-
-  window.addEventListener("dragenter", (event) => {
-    event.preventDefault();
-    dragDepth += 1;
-    showDropOverlay();
-  });
-
-  window.addEventListener("dragover", (event) => {
-    event.preventDefault();
-  });
-
-  window.addEventListener("dragleave", (event) => {
-    event.preventDefault();
-    dragDepth = Math.max(0, dragDepth - 1);
-    if (dragDepth === 0) elements.dropOverlay.classList.remove("is-visible");
-  });
-
-  window.addEventListener("drop", async (event) => {
-    event.preventDefault();
-    hideDropOverlay();
-
-    const droppedFile = event.dataTransfer.files?.[0];
-    const filePath = droppedFile ? window.mdLens.getPathForFile(droppedFile) : "";
-    if (!filePath) return;
-
-    try {
-      const file = await window.mdLens.readFile(filePath);
-      renderMarkdown(file);
-    } catch (error) {
-      showToast(error.message || "无法读取拖入的文件");
-    }
-  });
-}
-
 function bindShortcuts() {
   window.addEventListener("keydown", (event) => {
     const mod = event.metaKey || event.ctrlKey;
@@ -377,6 +331,5 @@ async function loadDefaultDocument() {
   }, { isDefault: true });
 }
 
-bindDragDrop();
 bindShortcuts();
 loadDefaultDocument().catch(() => showToast("默认文档加载失败"));
