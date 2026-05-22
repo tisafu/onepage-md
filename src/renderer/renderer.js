@@ -120,6 +120,24 @@ function addHeadingIdsAndBuildToc() {
   elements.toc.appendChild(fragment);
 }
 
+function scrollDocumentToTop() {
+  const stage = document.querySelector(".document-stage");
+  const targets = [stage, document.scrollingElement, document.documentElement, document.body, elements.document]
+    .filter(Boolean);
+
+  const apply = () => {
+    targets.forEach((target) => {
+      target.scrollTop = 0;
+      target.scrollLeft = 0;
+    });
+  };
+
+  apply();
+  requestAnimationFrame(apply);
+  requestAnimationFrame(() => requestAnimationFrame(apply));
+  window.setTimeout(apply, 80);
+}
+
 function patchLinksAndImages() {
   elements.document.querySelectorAll("a[href]").forEach((link) => {
     const href = link.getAttribute("href") || "";
@@ -167,8 +185,7 @@ function renderMarkdown(file, options = {}) {
   elements.refreshButton.disabled = Boolean(options.isDefault);
   elements.revealButton.disabled = Boolean(options.isDefault);
 
-  const stage = document.querySelector(".document-stage");
-  stage?.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  scrollDocumentToTop();
 
   if (!options.isDefault) {
     showToast(`已打开：${file.name}`);
