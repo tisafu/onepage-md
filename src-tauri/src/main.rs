@@ -4,6 +4,8 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::Mutex;
+use std::thread;
+use std::time::Duration;
 use tauri::{Emitter, Manager, RunEvent};
 
 #[derive(Default)]
@@ -72,6 +74,37 @@ fn file_url_to_path(url: &tauri::Url) -> Option<String> {
     }
 
     Some(url.path().to_string())
+}
+
+fn activate_app() {
+    #[cfg(target_os = "macos")]
+    {
+        let _ = Command::new("open")
+            .arg("-b")
+            .arg("cn.workbuddy.onepage")
+            .spawn();
+    }
+}
+
+fn focus_main_window(app: &tauri::AppHandle) {
+    if let Some(window) = app.get_webview_window("main") {
+        let _ = window.unminimize();
+        let _ = window.show();
+        let _ = window.set_focus();
+    }
+    activate_app();
+}
+
+fn focus_main_window_repeatedly(app: tauri::AppHandle) {
+    focus_main_window(&app);
+
+    for delay_ms in [80_u64, 250, 650] {
+        let app_handle = app.clone();
+        thread::spawn(move || {
+            thread::sleep(Duration::from_millis(delay_ms));
+            focus_main_window(&app_handle);
+        });
+    }
 }
 
 #[tauri::command]
@@ -151,11 +184,7 @@ fn main() {
                 }
 
                 let _ = app.emit("opened-file", paths.clone());
-
-                if let Some(window) = app.get_webview_window("main") {
-                    let _ = window.show();
-                    let _ = window.set_focus();
-                }
+                focus_main_window_repeatedly(app.clone());
             }
         });
 }
