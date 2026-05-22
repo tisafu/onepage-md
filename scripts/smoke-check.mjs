@@ -11,6 +11,8 @@ const requiredFiles = [
   "src/renderer/default.md",
   "src/renderer/vendor/purify.min.js",
   "src/renderer/vendor/marked.umd.js",
+  "src/renderer/vendor/highlight.min.js",
+  "src/renderer/vendor/highlight-github.min.css",
   "src-tauri/Cargo.toml",
   "src-tauri/tauri.conf.json",
   "src-tauri/src/main.rs",
@@ -30,6 +32,9 @@ if (!indexHtml.includes("./vendor/marked.umd.js")) {
 }
 if (!indexHtml.includes("./vendor/purify.min.js")) {
   throw new Error("renderer is not loading the bundled DOMPurify file");
+}
+if (!indexHtml.includes("./vendor/highlight.min.js") || !indexHtml.includes("./vendor/highlight-github.min.css")) {
+  throw new Error("renderer is not loading the bundled highlight.js files");
 }
 if (!indexHtml.includes("./bridge.js")) {
   throw new Error("renderer is not loading the Tauri bridge");

@@ -141,6 +141,13 @@ function scrollDocumentToTop() {
   [50, 150, 350, 700].forEach((delay) => window.setTimeout(apply, delay));
 }
 
+function highlightCodeBlocks() {
+  if (!window.hljs) return;
+  elements.document.querySelectorAll("pre code").forEach((block) => {
+    window.hljs.highlightElement(block);
+  });
+}
+
 function patchLinksAndImages() {
   elements.document.querySelectorAll("a[href]").forEach((link) => {
     const href = link.getAttribute("href") || "";
@@ -174,6 +181,7 @@ function renderMarkdown(file, options = {}) {
   state.renderedHtml = cleanHtml;
   elements.document.innerHTML = cleanHtml || "<p>这个文件没有内容。</p>";
   patchLinksAndImages();
+  highlightCodeBlocks();
   addHeadingIdsAndBuildToc();
 
   elements.reader.classList.remove("is-hidden");

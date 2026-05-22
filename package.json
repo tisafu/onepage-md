@@ -11,8 +11,10 @@
     "smoke": "node scripts/smoke-check.mjs"
   },
   "devDependencies": {
+    "@highlightjs/cdn-assets": "^11.11.1",
     "@tauri-apps/cli": "^2.11.2",
     "dompurify": "latest",
+    "highlight.js": "^11.11.1",
     "marked": "^18.0.4"
   }
 }

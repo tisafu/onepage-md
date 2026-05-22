@@ -504,12 +504,29 @@ button:disabled {
   margin: var(--zh-quote-spacing) 0;
 }
 
+.markdown-body li::marker {
+  color: #999999;
+}
+
+.markdown-body li:has(> input[type="checkbox"]),
+.markdown-body li.task-list-item {
+  list-style: none;
+}
+
+.markdown-body ul:has(> li > input[type="checkbox"]) {
+  padding-left: 0;
+}
+
 .markdown-body li > p {
   margin-bottom: var(--zh-quote-spacing);
 }
 
 .markdown-body input[type="checkbox"] {
-  margin-right: 0.5em;
+  width: 1em;
+  height: 1em;
+  margin: 0 0.55em 0 0;
+  vertical-align: -0.12em;
+  accent-color: #666666;
 }
 
 .markdown-body blockquote {
@@ -549,13 +566,15 @@ button:disabled {
 
 .markdown-body pre {
   overflow: auto;
+  border: 1px solid rgba(135, 131, 120, 0.16);
   border-radius: 6px;
   padding: 1em 1.2em;
   color: var(--text-normal);
-  background: var(--code-bg);
+  background: rgba(248, 248, 248, 0.96);
 }
 
-.markdown-body pre code {
+.markdown-body pre code,
+.markdown-body pre code.hljs {
   padding: 0;
   margin: 0;
   border: 0;
@@ -563,7 +582,7 @@ button:disabled {
   background: transparent;
   font-family: var(--zh-font-mono);
   font-size: 0.9em;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 .markdown-body a {
