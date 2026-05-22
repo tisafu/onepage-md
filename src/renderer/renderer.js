@@ -339,5 +339,16 @@ async function loadDefaultDocument() {
   }, { isDefault: true });
 }
 
+async function loadInitialDocument() {
+  const openedFiles = await window.mdLens.openedFiles?.();
+  if (Array.isArray(openedFiles) && openedFiles[0]) {
+    const file = await window.mdLens.readFile(openedFiles[0]);
+    renderMarkdown(file);
+    return;
+  }
+
+  await loadDefaultDocument();
+}
+
 bindShortcuts();
-loadDefaultDocument().catch(() => showToast("默认文档加载失败"));
+loadInitialDocument().catch(() => showToast("默认文档加载失败"));

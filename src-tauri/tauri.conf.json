@@ -31,9 +31,15 @@
     ],
     "fileAssociations": [
       {
-        "ext": ["md", "markdown", "mdown", "mkd"],
+        "ext": ["md", "markdown", "mdown", "mkd", "txt"],
+        "mimeType": "text/markdown",
         "name": "Markdown Document",
-        "role": "Viewer"
+        "role": "Viewer",
+        "rank": "Default",
+        "exportedType": {
+          "identifier": "cn.workbuddy.onepage.markdown",
+          "conformsTo": ["public.plain-text", "net.daringfireball.markdown"]
+        }
       }
     ]
   }

@@ -3,6 +3,11 @@ use serde::Serialize;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::sync::Mutex;
+use tauri::{Emitter, Manager, RunEvent};
+
+#[derive(Default)]
+struct OpenedFiles(Mutex<Vec<String>>);
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -58,9 +63,29 @@ fn read_markdown_path(path: PathBuf) -> Result<FilePayload, String> {
     })
 }
 
+fn file_url_to_path(url: &tauri::Url) -> Option<String> {
+    if url.scheme() == "file" {
+        return url
+            .to_file_path()
+            .ok()
+            .map(|path| path.to_string_lossy().to_string());
+    }
+
+    Some(url.path().to_string())
+}
+
 #[tauri::command]
 fn read_markdown_file(path: String) -> Result<FilePayload, String> {
     read_markdown_path(PathBuf::from(path))
+}
+
+#[tauri::command]
+fn opened_files(app: tauri::AppHandle) -> Vec<String> {
+    app.state::<OpenedFiles>()
+        .0
+        .lock()
+        .map(|paths| paths.clone())
+        .unwrap_or_default()
 }
 
 #[tauri::command]
@@ -100,11 +125,37 @@ fn reveal_file(path: String) -> Result<(), String> {
 
 fn main() {
     tauri::Builder::default()
+        .manage(OpenedFiles::default())
         .invoke_handler(tauri::generate_handler![
             open_file_dialog,
+            opened_files,
             read_markdown_file,
             reveal_file
         ])
-        .run(tauri::generate_context!())
-        .expect("failed to run OnePage");
+        .build(tauri::generate_context!())
+        .expect("failed to build OnePage")
+        .run(|app, event| {
+            if let RunEvent::Opened { urls } = event {
+                let paths = urls
+                    .iter()
+                    .filter_map(file_url_to_path)
+                    .filter(|path| is_markdown_file(Path::new(path)))
+                    .collect::<Vec<_>>();
+
+                if paths.is_empty() {
+                    return;
+                }
+
+                if let Ok(mut opened_paths) = app.state::<OpenedFiles>().0.lock() {
+                    *opened_paths = paths.clone();
+                }
+
+                let _ = app.emit("opened-file", paths.clone());
+
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.set_focus();
+                }
+            }
+        });
 }
