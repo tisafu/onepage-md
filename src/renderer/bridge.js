@@ -4,6 +4,7 @@ const fileErrorListeners = new Set();
 const tauriApi = window.__TAURI__;
 const invoke = tauriApi?.core?.invoke;
 const listen = tauriApi?.event?.listen;
+const getCurrentWebview = tauriApi?.webview?.getCurrentWebview;
 
 function notifyFileOpened(file) {
   fileOpenedListeners.forEach((callback) => callback(file));
@@ -37,15 +38,50 @@ async function openDroppedPath(path) {
   }
 }
 
-if (listen) {
-  listen("tauri://drag-enter", () => dispatchDragState("onepage-drag-enter"));
-  listen("tauri://drag-over", () => dispatchDragState("onepage-drag-enter"));
-  listen("tauri://drag-leave", () => dispatchDragState("onepage-drag-leave"));
-  listen("tauri://drag-drop", async (event) => {
+async function setupWebviewDragDrop() {
+  if (!getCurrentWebview) return false;
+
+  const webview = getCurrentWebview();
+  if (!webview?.onDragDropEvent) return false;
+
+  await webview.onDragDropEvent(async (event) => {
+    const payload = event.payload;
+    if (payload?.type === "over") {
+      dispatchDragState("onepage-drag-enter");
+      return;
+    }
+
+    if (payload?.type === "cancel") {
+      dispatchDragState("onepage-drag-leave");
+      return;
+    }
+
+    if (payload?.type === "drop") {
+      dispatchDragState("onepage-drag-leave");
+      await openDroppedPath(getDroppedPath(payload));
+    }
+  });
+
+  return true;
+}
+
+async function setupLegacyDragDropFallback() {
+  if (!listen) return;
+
+  await listen("tauri://drag-enter", () => dispatchDragState("onepage-drag-enter"));
+  await listen("tauri://drag-over", () => dispatchDragState("onepage-drag-enter"));
+  await listen("tauri://drag-leave", () => dispatchDragState("onepage-drag-leave"));
+  await listen("tauri://drag-drop", async (event) => {
     dispatchDragState("onepage-drag-leave");
     await openDroppedPath(getDroppedPath(event.payload));
   });
 }
+
+setupWebviewDragDrop()
+  .then((enabled) => {
+    if (!enabled) return setupLegacyDragDropFallback();
+  })
+  .catch(() => setupLegacyDragDropFallback());
 
 window.mdLens = {
   openFileDialog: () => invoke("open_file_dialog"),

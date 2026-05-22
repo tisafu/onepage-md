@@ -390,6 +390,11 @@ button:disabled {
   border-color: var(--text-accent);
 }
 
+.document-top-anchor {
+  width: 1px;
+  height: 1px;
+}
+
 .markdown-body {
   width: var(--zh-content-width);
   max-width: calc(100vw - 320px);

@@ -14,6 +14,7 @@ const elements = {
   refreshButton: document.getElementById("refreshButton"),
   revealButton: document.getElementById("revealButton"),
   reader: document.getElementById("reader"),
+  documentTop: document.getElementById("documentTop"),
   document: document.getElementById("document"),
   toc: document.getElementById("toc"),
   docTitle: document.getElementById("docTitle"),
@@ -130,12 +131,15 @@ function scrollDocumentToTop() {
       target.scrollTop = 0;
       target.scrollLeft = 0;
     });
+    stage?.scrollTo(0, 0);
+    window.scrollTo(0, 0);
+    elements.documentTop?.scrollIntoView({ block: "start", inline: "nearest", behavior: "auto" });
   };
 
   apply();
   requestAnimationFrame(apply);
   requestAnimationFrame(() => requestAnimationFrame(apply));
-  window.setTimeout(apply, 80);
+  [50, 150, 350, 700].forEach((delay) => window.setTimeout(apply, delay));
 }
 
 function patchLinksAndImages() {
